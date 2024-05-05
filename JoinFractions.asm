@@ -17,6 +17,12 @@ msg1 db 13,10,'enter a number: $'
  AddedUpperAscii1 db ?
  AddedUpperAscii2 db ?
  resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $'
+ w dw 36
+h dw 36
+x dw 36
+y dw 18
+color db 15
+
  
 .CODE
 
@@ -90,7 +96,23 @@ mov al,CommonDenominatorAscii2
 mov [bx+57],al
 lea DX,resultmsg 
 mov AH,09h 
-int 21h 
+int 21h
+
+;wait for keypress
+  mov ah,00
+  int 16h
+  
+  
+mov ah, 0   ;video mode
+mov al, 13h 
+int 10h
+
+mov bl,b
+mov al,4
+mul bl
+add al,2
+mov  w,  ax 
+call DrawSquare
 
 mov AH, 4Ch 
 int 21h
@@ -169,5 +191,72 @@ mov AddedUpper,dx
 popa
 ret   
 endp JoinFractions
+proc UpLine
+; draw upper line:
+
+    mov cx, x+w  ; column
+    mov dx, y     ; row
+    mov al, color     ; white
+u1: mov ah, 0ch    ; put pixel
+    int 10h
+    
+    dec cx
+    cmp cx, x
+    jae u1
+    ret
+endp UpLine
+
+proc BottomLine 
+; draw bottom line:
+
+    mov cx, x+w  ; column
+    mov dx, y+h   ; row
+    mov al, color     ; white
+u2: mov ah, 0ch    ; put pixel
+    int 10h
+    
+    dec cx
+    cmp cx, x
+    ja u2
+    ret
+endp BottomLine
+
+proc LeftLine 
+; draw left line:
+
+    mov cx, x    ; column
+    mov dx, y+h   ; row
+    mov al, color     ; white
+u3: mov ah, 0ch    ; put pixel
+    int 10h
+    
+    dec dx
+    cmp dx, y
+    ja u3
+    ret
+endp LeftLine
+
+    
+proc RightLine    
+; draw right line:
+
+    mov cx, x+w  ; column
+    mov dx, y+h   ; row
+    mov al, color     ; white
+u4: mov ah, 0ch    ; put pixel
+    int 10h
+    
+    dec dx
+    cmp dx, y
+    ja u4
+    ret
+endp RightLine
+proc DrawSquare
+call UpLine
+call BottomLine
+call RightLine
+call LeftLine
+ret
+endp DrawSquare
 END 
  
