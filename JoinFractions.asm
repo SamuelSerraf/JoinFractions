@@ -18,10 +18,11 @@ msg1 db 13,10,'enter a number: $'
  AddedUpperAscii2 db ?
  resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $'
  w dw 36
-h dw 36
-x dw 36
-y dw 18
+h dw 18
+x dw 24
+y dw 20
 color db 15
+times db ?
 
  
 .CODE
@@ -107,12 +108,13 @@ mov ah, 0   ;video mode
 mov al, 13h 
 int 10h
 
-mov bl,b
-mov al,4
-mul bl
-add al,2
-mov  w,  ax 
-call DrawSquare
+call DoTheSquare
+mov x,180
+call DoTheSquare
+
+
+
+
 
 mov AH, 4Ch 
 int 21h
@@ -193,8 +195,10 @@ ret
 endp JoinFractions
 proc UpLine
 ; draw upper line:
+pusha
 
-    mov cx, x+w  ; column
+    mov cx, x
+    add cx,w    ; column
     mov dx, y     ; row
     mov al, color     ; white
 u1: mov ah, 0ch    ; put pixel
@@ -203,14 +207,18 @@ u1: mov ah, 0ch    ; put pixel
     dec cx
     cmp cx, x
     jae u1
+    popa
     ret
 endp UpLine
 
 proc BottomLine 
 ; draw bottom line:
+pusha
 
-    mov cx, x+w  ; column
-    mov dx, y+h   ; row
+    mov cx, x
+    add cx,w  ; column
+    mov dx, y
+    add dx,h   ; row
     mov al, color     ; white
 u2: mov ah, 0ch    ; put pixel
     int 10h
@@ -218,14 +226,17 @@ u2: mov ah, 0ch    ; put pixel
     dec cx
     cmp cx, x
     ja u2
+    popa
     ret
 endp BottomLine
 
-proc LeftLine 
+proc LeftLine
+    pusha 
 ; draw left line:
 
     mov cx, x    ; column
-    mov dx, y+h   ; row
+    mov dx, y
+    add dx,h   ; row
     mov al, color     ; white
 u3: mov ah, 0ch    ; put pixel
     int 10h
@@ -233,15 +244,18 @@ u3: mov ah, 0ch    ; put pixel
     dec dx
     cmp dx, y
     ja u3
+    popa
     ret
 endp LeftLine
 
     
 proc RightLine    
 ; draw right line:
-
-    mov cx, x+w  ; column
-    mov dx, y+h   ; row
+pusha
+    mov cx, x
+    add cx,w  ; column
+    mov dx, y
+    add dx,h   ; row
     mov al, color     ; white
 u4: mov ah, 0ch    ; put pixel
     int 10h
@@ -249,6 +263,7 @@ u4: mov ah, 0ch    ; put pixel
     dec dx
     cmp dx, y
     ja u4
+    popa
     ret
 endp RightLine
 proc DrawSquare
@@ -258,5 +273,101 @@ call RightLine
 call LeftLine
 ret
 endp DrawSquare
+proc DoTheSquare
+mov al,a
+div b
+cmp al,0
+je temp1
+cmp ah,0
+jne add1
+jmp dontadd
+add1:
+inc times
+dontadd:
+add times,al
+jmp square
+
+
+
+
+temp1:
+mov times,1
+jmp square
+
+
+addy:
+sub x,8
+mov al,b
+sub a,al
+add y,20
+mov al,8
+mul dl
+sub byte ptr x, al
+inc h
+square:
+mov color,15
+xor dl,dl
+mov bl,b
+mov al,8
+mul bl
+mov  w,  ax 
+call DrawSquare
+mov cl,b
+cmp cl,1
+je again
+dec cl
+again:
+
+add x,8
+inc dl
+call LeftLine
+dec cl
+cmp cl,0
+jne again
+
+xor cx,cx
+dec h
+inc x
+mov color,5
+
+mov al,8
+mul dl
+sub byte ptr x, al
+mov al,8
+mov bl,a
+mul bl
+mov cl,al
+dec cl
+mov al,8
+mov bl,b
+mul bl
+draw:
+call LeftLine
+inc x
+cmp al,2
+je time
+dec cl
+dec al
+cmp cl,0
+je time
+jmp draw
+
+
+time:
+mov al,b
+cmp al,1
+je xplus8
+jmp finishtime
+xplus8:
+add x,8
+finishtime:
+dec times
+cmp times,0
+je ctn
+jmp addy
+
+ctn:
+ret
+endp DoTheSquare
 END 
  
