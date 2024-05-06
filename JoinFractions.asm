@@ -108,10 +108,199 @@ mov ah, 0   ;video mode
 mov al, 13h 
 int 10h
 
-call DoTheSquare
-mov x,180
-call DoTheSquare
+mov al,a
+div b
+cmp al,0
+je temp1
+cmp ah,0
+jne add1
+jmp dontadd
+add1:
+inc times
+dontadd:
+add times,al
+jmp square
 
+
+
+
+temp1:
+mov times,1
+jmp square
+
+
+addy:
+sub x,8
+mov al,b
+sub a,al
+add y,20
+mov al,8
+mul dl
+sub byte ptr x, al
+inc h
+square:
+mov color,15
+xor dl,dl
+mov bl,b
+mov al,8
+mul bl
+mov  w,  ax 
+call DrawSquare
+mov cl,b
+cmp cl,1
+je again
+dec cl
+again:
+
+add x,8
+inc dl
+call LeftLine
+dec cl
+cmp cl,0
+jne again
+
+xor cx,cx
+dec h
+inc x
+mov color,5
+
+mov al,8
+mul dl
+sub byte ptr x, al
+mov al,8
+mov bl,a
+mul bl
+mov cl,al
+dec cl
+mov al,8
+mov bl,b
+mul bl
+draw:
+call LeftLine
+inc x
+cmp al,2
+je time
+dec cl
+dec al
+cmp cl,0
+je time
+jmp draw
+
+
+time:
+mov al,b
+cmp al,1
+je xplus8
+jmp finishtime
+xplus8:
+add x,8
+finishtime:
+dec times
+cmp times,0
+je ctn
+jmp addy
+
+
+ctn:
+mov x,180
+mov y,20
+mov al,c
+div b
+cmp al,0
+je atemp1
+cmp ah,0
+jne aadd1
+jmp adontadd
+aadd1:
+inc times
+adontadd:
+add times,al
+jmp asquare
+
+
+
+
+atemp1:
+mov times,1
+jmp asquare
+
+
+aaddy:
+sub x,8
+mov al,d
+sub a,al
+add y,20
+mov al,8
+mul dl
+sub byte ptr x, al
+inc h
+asquare:
+mov color,15
+xor dl,dl
+mov bl,d
+mov al,8
+mul bl
+mov  w,  ax 
+call DrawSquare
+mov cl,d
+cmp cl,1
+je aagain
+dec cl
+aagain:
+
+add x,8
+inc dl
+call LeftLine
+dec cl
+cmp cl,0
+jne aagain
+
+xor cx,cx
+dec h
+inc x
+mov color,5
+
+mov al,8
+mul dl
+sub byte ptr x, al
+mov al,8
+mov bl,c
+mul bl
+mov cl,al
+dec cl
+mov al,8
+mov bl,d
+mul bl
+adraw:
+call LeftLine
+inc x
+cmp al,2
+je time
+dec cl
+dec al
+cmp cl,0
+je atime
+jmp adraw
+
+
+atime:
+mov al,d
+cmp al,1
+je axplus8
+jmp afinishtime
+axplus8:
+add x,8
+afinishtime:
+dec times
+cmp times,0
+je actn
+jmp aaddy
+
+actn:
+mov x,0
+mov y,80
+mov w, 319
+call BottomLine
 
 
 
@@ -273,101 +462,6 @@ call RightLine
 call LeftLine
 ret
 endp DrawSquare
-proc DoTheSquare
-mov al,a
-div b
-cmp al,0
-je temp1
-cmp ah,0
-jne add1
-jmp dontadd
-add1:
-inc times
-dontadd:
-add times,al
-jmp square
 
-
-
-
-temp1:
-mov times,1
-jmp square
-
-
-addy:
-sub x,8
-mov al,b
-sub a,al
-add y,20
-mov al,8
-mul dl
-sub byte ptr x, al
-inc h
-square:
-mov color,15
-xor dl,dl
-mov bl,b
-mov al,8
-mul bl
-mov  w,  ax 
-call DrawSquare
-mov cl,b
-cmp cl,1
-je again
-dec cl
-again:
-
-add x,8
-inc dl
-call LeftLine
-dec cl
-cmp cl,0
-jne again
-
-xor cx,cx
-dec h
-inc x
-mov color,5
-
-mov al,8
-mul dl
-sub byte ptr x, al
-mov al,8
-mov bl,a
-mul bl
-mov cl,al
-dec cl
-mov al,8
-mov bl,b
-mul bl
-draw:
-call LeftLine
-inc x
-cmp al,2
-je time
-dec cl
-dec al
-cmp cl,0
-je time
-jmp draw
-
-
-time:
-mov al,b
-cmp al,1
-je xplus8
-jmp finishtime
-xplus8:
-add x,8
-finishtime:
-dec times
-cmp times,0
-je ctn
-jmp addy
-
-ctn:
-ret
-endp DoTheSquare
 END 
  
