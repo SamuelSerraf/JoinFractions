@@ -18,7 +18,7 @@
 9.הייתי מוסיף לתוכנה דרך להחפיל שברים גם.
 
 10.הפרוייקט הרגיש לי כיף מאוד , כל יום אחרי הלימודים המשכתי את הפרוייקט קצת כי באמת רציתי לראות את התוצאה בסוף.
-בסך הכל הפרוייקט היה לא קשה אבל גם לא קל היו לי כמה אתגרים במהלך הפרוייקט.
+בסך הכל הפרוייקט היה לא קשה אבל גם לא קל והיו לי כמה אתגרים במהלך הפרוייקט.
 ![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/0407dc75-7bc2-4a8e-97de-1998b82d4095)
 ![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/0a84661e-11cd-4983-a6e1-c78c5efbb244)
 ![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/eb76ccde-755b-434c-be9c-3c1a10195925)
