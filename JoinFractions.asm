@@ -1,32 +1,45 @@
 .MODEL small
 .STACK 100h 
 .DATA
-msg1 db 13,10,'enter a number: $'
- a db ?
- b db ?
- c db ?
- d db ?
- aAscii db ?
- bAscii db ?
- cAscii db ?
- dAscii db ?
- CommonDenominatorAscii1 db ?
- CommonDenominatorAscii2 db ? 
- CommonDenominator db ?
- AddedUpper dw ?
- AddedUpperAscii1 db ?
- AddedUpperAscii2 db ?
- resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $'
- w dw 36
-h dw 18
-x dw 54
-y dw 20
+msg1 db 13,10,'Enter a number: $'
+ a db ?  ;a in a/b + c/d = x/y
+ b db ?  ;b in a/b + c/d = x/y
+ c db ?  ;c in a/b + c/d = x/y
+ d db ?  ;d in a/b + c/d = x/y
+ aAscii db ?  ;Ascii form of a to put in a string
+ bAscii db ?  ;Ascii form of b to put in a string
+ cAscii db ?  ;Ascii form of c to put in a string
+ dAscii db ?  ;Ascii form of d to put in a string
+ CommonDenominatorAscii1 db ? ;first digit in ascii form of CommonDenominator to put in a string 
+ CommonDenominatorAscii2 db ? ;second digit in ascii form of CommonDenominator to put in a string 
+ CommonDenominator db ?  ; Common denominator of b and d
+ AddedUpper dw ?  ;Added up digit after multiplication of a and c;
+ AddedUpperAscii1 db ? ;first digit in ascii form of AddedUpper to put in a string
+ AddedUpperAscii2 db ? ;second digit in ascii form of AddedUpper to put in a string
+ resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $' ;result message
+ w dw 36 ;width
+h dw 18  ;height
+x dw 54  ;horizontal 
+y dw 20  ;vertical
 color db 15
 times db ?
+logo0 db "       _       _         ______              _   _                 ",13,10
+logo1 db "      | |     (_)       |  ____|            | | (_)                ",13,10
+logo2 db "      | | ___  _ _ __   | |__ _ __ __ _  ___| |_ _  ___  _ __  ___ ",13,10
+logo3 db "  _   | |/ _ \| | '_ \  |  __| '__/ _` |/ __| __| |/ _ \| '_ \/ __|",13,10
+logo4 db " | |__| | (_) | | | | | | |  | | | (_| | (__| |_| | (_) | | | \__ \",13,10
+logo5 db "  \____/ \___/|_|_| |_| |_|  |_|  \__,_|\___|\__|_|\___/|_| |_|___/",13,10,13,10,"$"
+name0 db 13,10,"Presented by:Samuel Serraf $",13,10,  ;name
 .code
 mov ax,@DATA
 mov ds,ax
 xor ax,ax
+lea dx,logo0
+mov ah,09h
+int 21h
+lea dx,name0
+mov ah,09h
+int 21h
 
                
 call InputNumber  
@@ -39,6 +52,31 @@ call InputNumber
 mov [d], al
 
 call JoinFractions
+mov cx,10                  ;reducing the fraction
+ReduceTheFraction:
+dec cl
+cmp cl,0
+je NoDivide
+mov ax,addedupper
+div cl
+cmp ah,0
+je CheckCommonDenominator
+jmp ReduceTheFraction
+CheckCommonDenominator:
+mov al,CommonDenominator
+div cl
+cmp ah,0
+je Dividebycx
+jmp ReduceTheFraction
+
+Dividebycx:
+mov ax,addedupper
+div cl
+mov byte ptr addedupper,al
+mov al,CommonDenominator   
+div cl
+mov CommonDenominator,al
+NoDivide:
 
 mov bl,a
 mov aAscii,bl
@@ -72,7 +110,6 @@ add CommonDenominatorAscii2,al
 add AddedUpperAscii1,al
 add AddedUpperAscii2,al
 
-
 lea bx,resultmsg
 mov al,aAscii
 mov [bx+45],al
@@ -97,7 +134,6 @@ int 21h
 ;wait for keypress
   mov ah,00
   int 16h
-  
   
 mov ah, 0   ;video mode
 mov al, 13h 
@@ -138,22 +174,21 @@ mov x,0
 mov y,80                                                
 mov w, 319
 call BottomLine
+
 mov  ax,  AddedUpper
 push ax
 mov al, CommonDenominator
 push ax
 inc h
-mov x,130
+mov x,30
 mov y,100
 
 call DrawFraction
 
-
-
 mov AH, 4Ch 
 int 21h
 
-proc DrawFraction
+proc DrawFraction   ;drawing the added fraction need to push atx=[bp+22] and y=[bp 20] x/y 
 push bp
 pusha
 mov bp,sp
@@ -169,22 +204,18 @@ inc times
 dontadd:
 add times,al
 jmp square
-
-
-
-
 temp1:
 mov times,1
 jmp square
 
 
 addy:
-sub x,8
+sub x,4
 xor ax,ax
 mov al,[bp +20]
 sub [bp +22],al
 add y,20
-mov al,8
+mov al,4
 mul dl
 sub  x, ax
 inc h
@@ -192,7 +223,7 @@ square:
 mov color,15
 xor dl,dl
 mov bl,[bp +20]
-mov al,8
+mov al,4
 mul bl
 mov  w,  ax 
 call DrawSquare
@@ -202,7 +233,7 @@ je again
 dec cl
 again:
 
-add x,8
+add x,4
 inc dl
 call LeftLine
 dec cl
@@ -214,18 +245,18 @@ dec h
 inc x
 mov color,5
 
-mov al,8
+mov al,4           
 mul dl
-sub x, ax
-mov al,8
+sub x, ax       ;back to 1 pixel after the white to draw pink
+mov al,4
 mov bl,[bp +22]
-mul bl
+mul bl 
 mov cl,al
 dec cl
-mov al,8
+mov al,4
 mov bl,[bp +20]
 mul bl
-mov bl,8
+mov bl,4
 draw:
 call LeftLine
 inc x
@@ -241,10 +272,10 @@ jmp draw
 time:
 mov al,[bp +20]
 cmp al,1
-je xplus8
+je xplus4
 jmp finishtime
-xplus8:
-add x,8
+xplus4:
+add x,4
 finishtime:
 dec times
 cmp times,0
@@ -255,10 +286,10 @@ ending:
 popa
 pop bp
 ret 4
-endp DrawFraction
+endp DrawFraction ;draw of x/y finished
 
-proc InputNumber 
-mov ah, 09h     ;
+proc InputNumber ;getting a char of a number and turning it into a number  
+mov ah, 09h     
 lea dx, msg1   
 int 21h         
 
@@ -268,13 +299,15 @@ sub al, 30h
      
 ret
 popa
-endp InputNumber
-proc ChangeToAscii
+endp InputNumber ; the outcome goes into al which is the effective adress of the parameter i put
+
+proc ChangeToAscii ;moving to al 30 to add the number to change then into ascii form
 xor ax,ax         
 add al, 30h     
 ret
-endp ChangeToAscii
-proc CommonGround
+endp ChangeToAscii ;al=30h 
+
+proc CommonGround ;takes b and d and puts their common denominator in CommonDenominator
 xor ax,ax
 xor bx,bx
 xor cx,cx
@@ -312,8 +345,9 @@ Exit:
 mov CommonDenominator,bl
 ret
     
-endp CommonGround
-proc JoinFractions
+endp CommonGround ; the common denominator of b and d is CommonDenominator 
+
+proc JoinFractions ; puts in AddedUpper a+c (after it was multiplied by the right number of the common denominator) example: 2/4 + 1/2 = 2/4 + 2/4 and Added upper is 2 + 2
 pusha
 call CommonGround
 xor ax,ax
@@ -332,27 +366,26 @@ add dx,cx
 mov AddedUpper,dx
 popa
 ret   
-endp JoinFractions
-proc UpLine
-; draw upper line:
+endp JoinFractions ; AddedUpper is a+c (after it was multiplied by the right number of the common denominator) example: 2/4 + 1/2 = 2/4 + 2/4 and Added upper is 2 + 2
+
+proc UpLine ; draw upper  the line of the square:
 pusha
 
     mov cx, x
     add cx,w    ; column
     mov dx, y     ; row
     mov al, color     ; white
-u1: mov ah, 0ch    ; put pixel
+line1: mov ah, 0ch    ; put pixel
     int 10h
     
     dec cx
     cmp cx, x
-    jae u1
+    jae line1 ;
     popa
     ret
 endp UpLine
 
-proc BottomLine 
-; draw bottom line:
+proc BottomLine  ; draw the bottom line of the square:
 pusha
 
     mov cx, x
@@ -360,52 +393,49 @@ pusha
     mov dx, y
     add dx,h   ; row
     mov al, color     ; white
-u2: mov ah, 0ch    ; put pixel
+line2: mov ah, 0ch    ; put pixel
     int 10h
     
     dec cx
     cmp cx, x
-    ja u2
+    ja line2
     popa
     ret
 endp BottomLine
 
-proc LeftLine
+proc LeftLine ; draw the left line of the square:
     pusha 
-; draw left line:
 
     mov cx, x    ; column
     mov dx, y
     add dx,h   ; row
     mov al, color     ; white
-u3: mov ah, 0ch    ; put pixel
+line3: mov ah, 0ch    ; put pixel
     int 10h
     
     dec dx
     cmp dx, y
-    ja u3
+    ja line3
     popa
     ret
 endp LeftLine
 
-    
-proc RightLine    
-; draw right line:
+proc RightLine  ; draw the right line of the square:
 pusha
     mov cx, x
     add cx,w  ; column
     mov dx, y
     add dx,h   ; row
     mov al, color     ; white
-u4: mov ah, 0ch    ; put pixel
+line4: mov ah, 0ch    ; put pixel
     int 10h
     
     dec dx
     cmp dx, y
-    ja u4
+    ja line4
     popa
     ret
-endp RightLine
+endp RightLine ;calling the 4 sides of the square 
 proc DrawSquare
 call UpLine
 call BottomLine
@@ -413,5 +443,4 @@ call RightLine
 call LeftLine
 ret
 endp DrawSquare
-
 END 
