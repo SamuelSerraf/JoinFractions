@@ -2,6 +2,7 @@
 .STACK 100h 
 .DATA
 msg1 db 13,10,'Enter a number: $'
+waitforkey db 13,10, 'Press any key to go into graphic mode  $', 13,10
  a db ?  ;a in a/b + c/d = x/y
  b db ?  ;b in a/b + c/d = x/y
  c db ?  ;c in a/b + c/d = x/y
@@ -18,7 +19,7 @@ msg1 db 13,10,'Enter a number: $'
  AddedUpperAscii2 db ? ;second digit in ascii form of AddedUpper to put in a string
  resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $' ;result message
  w dw 36 ;width
-h dw 18  ;height
+h dw 14  ;height
 x dw 54  ;horizontal 
 y dw 20  ;vertical
 color db 15
@@ -29,7 +30,7 @@ logo2 db "      | | ___  _ _ __   | |__ _ __ __ _  ___| |_ _  ___  _ __  ___ ",1
 logo3 db "  _   | |/ _ \| | '_ \  |  __| '__/ _` |/ __| __| |/ _ \| '_ \/ __|",13,10
 logo4 db " | |__| | (_) | | | | | | |  | | | (_| | (__| |_| | (_) | | | \__ \",13,10
 logo5 db "  \____/ \___/|_|_| |_| |_|  |_|  \__,_|\___|\__|_|\___/|_| |_|___/",13,10,13,10,"$"
-name0 db 13,10,"Presented by:Samuel Serraf $",13,10,  ;name
+name0 db 13,10,"Presented by:Samuel Serraf $",13,10,  ;name 
 .code
 mov ax,@DATA
 mov ds,ax
@@ -131,6 +132,10 @@ lea DX,resultmsg
 mov AH,09h 
 int 21h
 
+lea DX,waitforkey 
+mov AH,09h 
+int 21h
+
 ;wait for keypress
   mov ah,00
   int 16h
@@ -138,10 +143,12 @@ int 21h
 mov ah, 0   ;video mode
 mov al, 13h 
 int 10h
-mov color,15
+
+mov color,15   ;drawing plus
 mov x,138
 mov w,18
 mov y,12
+mov h,18
 call BottomLine
 mov x,148
 mov y,20
@@ -291,14 +298,29 @@ endp DrawFraction ;draw of x/y finished
 proc InputNumber ;getting a char of a number and turning it into a number  
 mov ah, 09h     
 lea dx, msg1   
-int 21h         
+int 21h
+         
+reinput:
+mov ah,01h
+int 16h
+jz reinput
 
-mov ah, 01h     
-int 21h         
+mov ah,00h
+int 16h
+
+cmp al,30h
+jb reinput
+
+cmp al,39h
+ja reinput
+
+mov dl,al
+mov ah,02h
+int 21h
+    
 sub al, 30h
      
-ret
-popa
+ret                                                         
 endp InputNumber ; the outcome goes into al which is the effective adress of the parameter i put
 
 proc ChangeToAscii ;moving to al 30 to add the number to change then into ascii form
