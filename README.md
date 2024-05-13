@@ -1,10 +1,25 @@
 # JoinFractions
-1. Get User input for 2 digits for 4 numbers. a/b + c/d = x/y
-2. find the common ground.( By adding the max of b,d till ..)
-3. calculate the result.
-4. print the equation.
-5. When the user press a key.
-6. Draw square for a/b , a shall be in a diffrent color.
-7. Draw square for c/d , c shall be in a different color.
-8. draw a line
-9. Draw square for x/y. 
+1.שם: שמואל סרף
+
+2.כיתה: י1
+
+3.שם המורה: ברק צוברי
+
+4.בית ספר: ישיבת בני עקיבא גבעת שמואל
+
+5.תעריך הגשה:08/05/2024
+
+6.התוכנה לוקחת 4 מספרים שהם 2 שברים ומחברת אותם ומראה בגרפיקה ובכתב את התוצאה.
+
+7.המשתמש צריך לכתוב 4 מספרים.
+
+8.התחלתי את התוכנה בחישוב חיבור השברים ואז עברתי לגרפיקה שלקח לי הכי הרבה זמן.
+
+9.הייתי מוסיף לתוכנה דרך להחפיל שברים גם.
+
+10.הפרוייקט הרגיש לי כיף מאוד , כל יום אחרי הלימודים המשכתי את הפרוייקט קצת כי באמת רציתי לראות את התוצאה בסוף.
+בסך הכל הפרוייקט היה לא קשה אבל גם לא קל והיו לי כמה אתגרים במהלך הפרוייקט.
+![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/0407dc75-7bc2-4a8e-97de-1998b82d4095)
+![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/0a84661e-11cd-4983-a6e1-c78c5efbb244)
+![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/eb76ccde-755b-434c-be9c-3c1a10195925)
+![image](https://github.com/SamuelSerraf/JoinFractions/assets/168074639/d58eb7ae-5a45-4366-b7c5-25255cc9a119)
