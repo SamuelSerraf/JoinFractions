@@ -17,7 +17,8 @@ waitforkey db 13,10, 'Press any key to go into graphic mode  $', 13,10
  AddedUpper dw ?  ;Added up digit after multiplication of a and c;
  AddedUpperAscii1 db ? ;first digit in ascii form of AddedUpper to put in a string
  AddedUpperAscii2 db ? ;second digit in ascii form of AddedUpper to put in a string
- resultMsg db 13,10,'The result of the addition of fractions is: / + / =  /  $' ;result message
+ AddedUpperAscii3 db ? ;third digit in ascii form of AddedUpper to put in a string
+ resultMsg db 13,10,'The result of the addition of fractions is: / + / =   /  $' ;result message
  w dw 36 ;width
 h dw 14  ;height
 x dw 54  ;horizontal 
@@ -53,7 +54,7 @@ call InputNumber
 mov [d], al
 
 call JoinFractions
-mov cx,10                  ;reducing the fraction
+mov cx,10         ;reducing the fraction
 ReduceTheFraction:
 dec cl
 cmp cl,0
@@ -99,8 +100,19 @@ mov ax, AddedUpper
 mov bl, 10      
 div bl           
 mov AddedUpperAscii1, al  
-mov AddedUpperAscii2, ah  
-
+mov AddedUpperAscii2, ah
+cmp al,10
+jae AddedUpper3
+jmp else
+AddedUpper3:
+mov ax,AddedUpper
+mov bl,10
+div bl
+mov ah,0
+div bl
+mov AddedUpperAscii1,ah
+mov AddedUpperAscii3,al  
+else:
 call ChangeToAscii
 add aAscii,al
 add bAscii,al
@@ -110,27 +122,8 @@ add CommonDenominatorAscii1,al
 add CommonDenominatorAscii2,al
 add AddedUpperAscii1,al
 add AddedUpperAscii2,al
-
-lea bx,resultmsg
-mov al,aAscii
-mov [bx+45],al
-mov al,bAscii
-mov [bx+47],al
-mov al,cAscii
-mov [bx+49],al
-mov al,dAscii
-mov [bx+51],al
-mov al,AddedUpperAscii1
-mov [bx+53],al
-mov al,AddedUpperAscii2
-mov [bx+54],al
-mov al,CommonDenominatorAscii1
-mov [bx+56],al
-mov al,CommonDenominatorAscii2
-mov [bx+57],al
-lea DX,resultmsg 
-mov AH,09h 
-int 21h
+add AddedUpperAscii3,al
+call PrintFormula
 
 lea DX,waitforkey 
 mov AH,09h 
@@ -217,12 +210,12 @@ jmp square
 
 
 addy:
-sub x,4
+sub x,2
 xor ax,ax
 mov al,[bp +20]
 sub [bp +22],al
 add y,20
-mov al,4
+mov al,2
 mul dl
 sub  x, ax
 inc h
@@ -230,17 +223,17 @@ square:
 mov color,15
 xor dl,dl
 mov bl,[bp +20]
-mov al,4
+mov al,2
 mul bl
 mov  w,  ax 
 call DrawSquare
 mov cl,[bp +20]
-cmp cl,1
+cmp cl,2
 je again
 dec cl
 again:
 
-add x,4
+add x,2
 inc dl
 call LeftLine
 dec cl
@@ -252,18 +245,18 @@ dec h
 inc x
 mov color,5
 
-mov al,4           
+mov al,2           
 mul dl
 sub x, ax       ;back to 1 pixel after the white to draw pink
-mov al,4
+mov al,2
 mov bl,[bp +22]
 mul bl 
 mov cl,al
 dec cl
-mov al,4
+mov al,2
 mov bl,[bp +20]
 mul bl
-mov bl,4
+mov bl,2
 draw:
 call LeftLine
 inc x
@@ -278,11 +271,11 @@ jmp draw
 
 time:
 mov al,[bp +20]
-cmp al,1
-je xplus4
+cmp al,2
+je xplus2
 jmp finishtime
-xplus4:
-add x,4
+xplus2:
+add x,2
 finishtime:
 dec times
 cmp times,0
@@ -465,4 +458,29 @@ call RightLine
 call LeftLine
 ret
 endp DrawSquare
+proc PrintFormula
+lea bx,resultmsg
+mov al,aAscii
+mov [bx+45],al
+mov al,bAscii
+mov [bx+47],al
+mov al,cAscii
+mov [bx+49],al
+mov al,dAscii
+mov [bx+51],al
+mov al,AddedUpperAscii3
+mov [bx+53],al
+mov al,AddedUpperAscii1
+mov [bx+54],al
+mov al,AddedUpperAscii2
+mov [bx+55],al
+mov al,CommonDenominatorAscii1
+mov [bx+57],al
+mov al,CommonDenominatorAscii2
+mov [bx+58],al
+lea DX,resultmsg 
+mov AH,09h 
+int 21h
+ret
+endp PrintFormula
 END 
